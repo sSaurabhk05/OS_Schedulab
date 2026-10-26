@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#05070d">
+  <meta name="description" content="An offline CPU scheduling studio. Compare classic policies, understand workload trade-offs, and inspect every decision.">
+  <title>SCHEDULAB · CPU Scheduling Studio</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/gantt.css">
+  <link rel="stylesheet" href="css/landing.css">
+</head>
+<body>
+  <a class="skip-link" href="#studioMain">Skip to the studio</a>
+  <svg class="svg-sprite" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9 9h6v6H9zM9 2v4m6-4v4M9 18v4m6-4v4M2 9h4m-4 6h4m12-6h4m-4 6h4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 1.9 5.8L20 11l-6.1 2.2L12 19l-2-5.8L4 11l6-2.2L12 3Zm7 12 .9 2.1L22 18l-2.1.8L19 21l-.8-2.2L16 18l2.2-.9L19 15Z"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 19V5m0 14h17M8 15v-4m4 4V7m4 8v-5m4 5V4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6m-5 0v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3m-6 11h10"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16m-10 4v6m4-6v6M6 7l1 14h10l1-14M9 7V4h6v3"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 5 12 7-12 7V5Z"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14m8-14v14"/></symbol>
+    <symbol id="i-step" viewBox="0 0 24 24"><path d="m6 5 10 7-10 7V5Zm13 0v14"/></symbol>
+    <symbol id="i-restart" viewBox="0 0 24 24"><path d="M4 11a8 8 0 1 1 2.3 5.7M4 5v6h6"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v12m-5-5 5 5 5-5M4 20h16"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4m-5 5 5-5 5 5M4 20h16"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2m10-10h-2M4 12H2m17.1-7.1-1.4 1.4M6.3 17.7l-1.4 1.4m14.2 0-1.4-1.4M6.3 6.3 4.9 4.9"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 15A8.5 8.5 0 0 1 9 3.5 8.5 8.5 0 1 0 20.5 15Z"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-6v-7h-4v7H4a1 1 0 0 1-1-1V10Z"/></symbol>
+    <symbol id="i-grip" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1"/><circle cx="15" cy="6" r="1"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/><circle cx="9" cy="18" r="1"/><circle cx="15" cy="18" r="1"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01"/></symbol>
+    <symbol id="i-command" viewBox="0 0 24 24"><path d="M9 8V5.5A2.5 2.5 0 1 0 6.5 8H9Zm0 0h6m0 0h2.5A2.5 2.5 0 1 0 15 5.5V8Zm0 0v8m0 0v2.5a2.5 2.5 0 1 0 2.5-2.5H15Zm0 0H9m0 0H6.5A2.5 2.5 0 1 0 9 18.5V16Zm0 0V8"/></symbol>
+  </svg>
+
+  <section class="landing" id="landing" aria-labelledby="landingTitle">
+    <canvas class="landing-canvas" id="landingCanvas" aria-hidden="true"></canvas>
+    <div class="landing-noise" aria-hidden="true"></div><div class="landing-spotlight" id="landingSpotlight" aria-hidden="true"></div>
+    <header class="landing-header"><a class="landing-brand" href="#landing" aria-label="SCHEDULAB home"><span class="brand-die"><svg viewBox="0 0 40 40" aria-hidden="true"><use href="#i-cpu"/></svg><i></i><i></i><i></i></span><span>SCHEDULAB</span></a><span class="offline-badge"><i></i> 100% OFFLINE · ZERO DEPENDENCIES</span><button class="landing-skip" id="skipIntro">Skip intro <svg><use href="#i-arrow"/></svg></button></header>
+    <main class="landing-main">
+      <div class="landing-copy">
+        <p class="landing-eyebrow"><span></span> EXPLAINABLE <b>·</b> OBJECTIVE-AWARE <b>·</b> OFFLINE</p>
+        <h1 id="landingTitle">Schedule smarter.<br><span>See exactly why.</span></h1>
+        <p class="landing-description">A workload-aware CPU scheduling studio that compares FCFS, SJF, Priority and Round Robin, picks the right one for your goal, and explains every decision.</p>
+        <p class="rotating-line">Optimized for <strong id="rotatingMetric">waiting time</strong><i class="type-caret"></i></p>
+        <div class="landing-actions"><button class="launch-button" id="getStarted"><span>GET STARTED</span><svg><use href="#i-arrow"/></svg><i class="launch-sheen"></i></button><a class="ghost-button" href="#featureStrip">See how it works <svg><use href="#i-arrow"/></svg></a></div>
+        <div class="landing-stats" aria-label="Project facts"><div><b data-count="4">0</b><span>POLICIES</span></div><div><b data-count="9">0</b><span>TEST WORKLOADS</span></div><div><b data-count="0">0</b><span>DEPENDENCIES</span></div><div><b data-count="100">0</b><span>% OFFLINE</span></div></div>
+      </div>
+      <div class="landing-scene-wrap"><div class="scene-status"><span class="pulse-dot"></span><span id="policySceneLabel">FCFS · Convoy effect</span><span class="scene-live">LIVE SIMULATION</span></div><div class="scene-frame"><canvas id="scheduleScene" aria-label="Animated CPU schedule showing processes moving through the scheduler"></canvas><div class="scene-overlay scene-cpu"><span class="cpu-halo"></span><svg><use href="#i-cpu"/></svg><small>CPU</small></div><div class="scene-overlay scene-queue">READY QUEUE <span id="sceneQueueCount">04</span></div><div class="scene-overlay scene-time">t = <b id="sceneTime">0</b></div><div class="scene-metric metric-one"><small>AVG WT</small><b>7.75</b><span>−18.2%</span></div><div class="scene-metric metric-two"><small>DECISION TRACE</small><b>R3 <i>→</i> SJF</b><span>CV 0.317 · ρS 0.50</span></div><div class="scene-gantt" id="sceneGantt"><span></span><span></span><span></span><span></span><span></span><span></span></div></div><p class="scene-caption">A workload arrives. The scheduler makes its case.</p></div>
+    </main>
+    <section class="landing-features" id="featureStrip" aria-label="Studio capabilities">
+      <article class="landing-feature"><span class="feature-icon"><svg><use href="#i-grid"/></svg></span><div><small>01 / UNDERSTAND</small><h2>Profile the workload</h2><p>See burst variation, interactive share, and priority spread at a glance.</p></div></article>
+      <article class="landing-feature"><span class="feature-icon violet"><svg><use href="#i-spark"/></svg></span><div><small>02 / EXPLAIN</small><h2>Follow the rules</h2><p>Every recommendation comes with a readable trace and measurable reason.</p></div></article>
+      <article class="landing-feature"><span class="feature-icon mint"><svg><use href="#i-chart"/></svg></span><div><small>03 / COMPARE</small><h2>Test the trade-offs</h2><p>Run four policies, compare objective scores, and inspect score regret.</p></div></article>
+      <article class="landing-feature"><span class="feature-icon amber"><svg><use href="#i-flask"/></svg></span><div><small>04 / EXPERIMENT</small><h2>Try what-if scenarios</h2><p>Change workload traits and watch the selected policy move.</p></div></article>
+    </section>
+    <footer class="landing-footer"><span>BUILT FOR OPERATING SYSTEMS · MADE TO BE UNDERSTOOD</span><span>OPEN LOCALLY · WORKS WITHOUT A NETWORK</span></footer>
+  </section>
+
+  <div class="app-shell" id="appShell" hidden>
+    <aside class="sidebar" id="sidebar" aria-label="Studio navigation">
+      <a class="app-brand" href="#studioMain"><span class="app-brand-icon"><svg><use href="#i-cpu"/></svg></span><span class="app-brand-text">SCHEDULAB<small>CPU SCHEDULING STUDIO</small></span></a>
+      <button class="sidebar-toggle" id="sidebarToggle" aria-label="Collapse navigation" aria-expanded="true"><svg><use href="#i-grid"/></svg><span>Collapse sidebar</span><kbd>⌘\</kbd></button>
+      <span class="nav-caption">WORKSPACE</span>
+      <nav class="side-nav" id="sideNav">
+        <a class="side-link active" href="#processSetup" title="Workload studio"><svg><use href="#i-grid"/></svg><span>Workload studio</span><small>02</small></a>
+        <a class="side-link" href="#profileSection" title="Workload profile"><svg><use href="#i-chart"/></svg><span>Workload profile</span><small>04</small></a>
+        <a class="side-link" href="#decisionSection" title="Decision engine"><svg><use href="#i-spark"/></svg><span>Decision engine</span><small>05</small></a>
+        <a class="side-link" href="#comparisonSection" title="Policy comparison"><svg><use href="#i-chart"/></svg><span>Policy comparison</span><small>06</small></a>
+        <a class="side-link" href="#timelineSection" title="Execution timeline"><svg><use href="#i-clock"/></svg><span>Execution timeline</span><small>07</small></a>
+        <a class="side-link" href="#whatIfSection" title="What-if lab"><svg><use href="#i-flask"/></svg><span>What-if lab</span><small>08</small></a>
+        <a class="side-link" href="#verificationSection" title="Verification"><svg><use href="#i-check"/></svg><span>Verification</span><small>09</small></a>
+      </nav>
+      <div class="sidebar-spacer"></div>
+      <div class="sidebar-bottom"><span class="local-status"><i></i> LOCAL ENGINE</span><button id="homeButton" class="home-button"><svg><use href="#i-home"/></svg><span>Home</span></button><div class="sidebar-version">VERSION <b>1.0.0</b></div></div>
+    </aside>
+
+    <main class="studio-main" id="studioMain" tabindex="-1">
+      <header class="topbar">
+        <div class="topbar-left"><span class="breadcrumbs">SCHEDULAB <b>/</b> <strong>STUDIO</strong></span><h1>Scheduling workbench</h1></div>
+        <div class="topbar-actions"><span class="engine-status"><i></i> SIMULATOR READY</span><button class="icon-button" id="themeToggle" aria-label="Switch to light theme" title="Toggle theme"><svg><use href="#i-sun"/></svg></button><button class="button subtle" id="resetButton">Reset</button><button class="button primary run-button" id="runButton"><svg><use href="#i-spark"/></svg><span>Run analysis</span><kbd>⌘↵</kbd></button><button class="mobile-command" id="mobileCommand" aria-label="Open command palette"><svg><use href="#i-command"/></svg></button></div>
+      </header>
+      <div class="app-content" id="appContent">
+        <section class="workbench-hero reveal" aria-labelledby="appHeroTitle"><div><p class="eyebrow"><span></span> WORKLOAD-AWARE · OBJECTIVE-DRIVEN · EXPLAINABLE</p><h2 id="appHeroTitle">Every workload<br>has its own <em>rhythm.</em></h2><p>Shape your process mix, choose what matters, then see how four classic schedulers respond.</p></div><div class="hero-aside"><div class="hero-constellation"><span class="constellation-core"><svg><use href="#i-cpu"/></svg></span><i></i><i></i><i></i><i></i></div><span>ONE WORKLOAD <b>×</b> FOUR POLICIES</span></div></section>
+
+        <section class="panel section-panel setup-card reveal" id="processSetup" aria-labelledby="setupTitle">
+          <div class="setup-step-number">01</div><div class="setup-copy"><span class="section-index">START WITH YOUR WORKLOAD</span><h2 id="setupTitle">How many processes do you want to schedule?</h2><p>Choose a count from 1 to 20. We’ll create exactly that many blank process forms for you to complete.</p><form class="setup-form" id="setupForm"><label for="processTotal">NUMBER OF PROCESSES</label><div class="setup-input-row"><input id="processTotal" type="number" min="1" max="20" step="1" inputmode="numeric" placeholder="Enter a number" required><button class="button primary" type="submit">Continue to workload <svg><use href="#i-arrow"/></svg></button></div><span class="setup-hint">No sample workload is loaded automatically. You enter every process value.</span></form></div><div class="setup-visual" aria-hidden="true"><div class="setup-orbit"><span>n</span><i></i><i></i><i></i></div><small>YOUR INPUT<br>YOUR SCHEDULE</small></div>
+        </section>
+
+        <section class="panel section-panel reveal" id="workloadSection" aria-labelledby="workloadTitle" hidden>
+          <div class="section-head"><div><span class="section-index">02 <i></i> INPUT</span><h2 id="workloadTitle">Enter your processes</h2><p>Complete every field below. Process class is required for the workload-aware analysis.</p></div><div class="panel-actions"><label class="select-label">OPTIONAL REFERENCE PRESET<select id="presetSelect" aria-label="Optionally load a reference preset"><option value="">Choose only if you want sample data</option></select></label><button class="button subtle" id="randomizeButton"><svg><use href="#i-spark"/></svg> Randomize</button><button class="button subtle" id="importButton"><svg><use href="#i-upload"/></svg> Import</button><button class="button subtle" id="exportWorkloadButton"><svg><use href="#i-download"/></svg> Export</button><input type="file" id="importFile" accept="application/json,.json" hidden></div></div>
+          <div class="inline-error" id="workloadError" role="alert" aria-live="polite"></div>
+          <div class="table-scroll"><table class="process-table"><thead><tr><th><span class="sr-only">Reorder</span></th><th>PROCESS</th><th>ARRIVAL</th><th>CPU BURST</th><th>PRIORITY <span class="th-note">1 = highest</span></th><th>PROCESS CLASS</th><th><span class="sr-only">Remove</span></th></tr></thead><tbody id="processRows"></tbody></table></div>
+          <div class="table-footer"><span class="process-counter"><b id="processCount">0</b> / 20 process forms</span><button class="add-process" id="addProcessButton"><svg><use href="#i-plus"/></svg> Add process</button><span class="model-note"><svg><use href="#i-info"/></svg> Known bursts · single CPU · zero switch cost</span></div>
+        </section>
+
+        <section class="panel section-panel reveal" id="objectiveSection" aria-labelledby="objectiveTitle">
+          <div class="section-head compact-head"><div><span class="section-index">03 <i></i> GOAL &amp; OPTIONS</span><h2 id="objectiveTitle">Choose the outcome that matters.</h2></div><div class="quantum-formula" id="quantumFormula">q = max(1, round(0.5 × μB))</div></div>
+          <div class="objective-grid" id="objectiveGrid" role="radiogroup" aria-label="Scheduling objective"></div>
+          <div class="option-row"><label class="toggle-option"><input type="checkbox" id="respectPriority"><span class="toggle-ui"></span><span><b>Respect priorities</b><small>Allow priority spread to influence selection</small></span></label><label class="toggle-option"><input type="checkbox" id="agingToggle"><span class="toggle-ui"></span><span><b>Enable priority aging</b><small>Raise effective priority every 5 waiting units</small></span></label><div class="quantum-setting"><span class="setting-label">ROUND ROBIN QUANTUM</span><div class="segmented" role="radiogroup" aria-label="Quantum mode"><label><input type="radio" name="quantumMode" value="adaptive" checked><span>Adaptive</span></label><label><input type="radio" name="quantumMode" value="manual"><span>Manual</span></label></div><div class="quantum-control" id="manualQuantum" hidden><input type="number" id="quantumRange" min="1" step="1" inputmode="numeric" value="3" aria-label="Manual Round Robin quantum"><output id="quantumValue" for="quantumRange">3</output></div></div></div>
+        </section>
+
+        <section class="panel section-panel reveal" id="profileSection" aria-labelledby="profileTitle">
+          <div class="section-head"><div><span class="section-index">04 <i></i> PROFILE</span><h2 id="profileTitle">The shape of your workload.</h2><p>Signals the rule engine uses to make its choice.</p></div><span class="profile-live"><i></i> LIVE PROFILE</span></div>
+          <div class="profile-grid" id="profileGrid"></div>
+        </section>
+
+        <section class="decision-panel reveal" id="decisionSection" aria-labelledby="decisionTitle" aria-live="polite">
+          <div class="decision-main"><div class="decision-copy"><span class="section-index light-index">05 <i></i> DECISION ENGINE</span><p class="decision-overline">RULE-BASED HEURISTIC PICK</p><div class="decision-policy"><span class="policy-mark" id="decisionMark"><svg><use href="#i-spark"/></svg></span><div><span class="policy-name" id="decisionPolicy">SJF</span><h2 id="decisionTitle">Shortest Job First</h2></div></div><p class="decision-reason" id="decisionReason">Your workload profile favors short jobs for the selected objective.</p><div class="decision-badges"><span class="rule-badge" id="ruleBadge">R3 · burst variation + short jobs</span><span class="regret-badge" id="regretBadge">Score gap to best fit · 0.0 pts</span></div></div><div class="fit-ring" id="fitRing" role="img" aria-label="Heuristic policy score"><div><b id="fitScore">0</b><span>RULE SCORE</span><small>/ 100</small></div></div></div>
+          <div class="decision-contrast" id="decisionContrast" aria-live="polite"><div class="contrast-pick"><small>RULE ENGINE PICK</small><strong id="contrastRule">—</strong><span>Based on workload signals and R1–R4</span></div><div class="contrast-divider" id="contrastDivider" aria-hidden="true">≠</div><div class="contrast-pick contrast-best"><small id="contrastObjective">BEST FIT FOR SELECTED OBJECTIVE</small><strong id="contrastBest">—</strong><span>Highest score after simulating all four policies</span></div></div><p class="decision-explainer" id="decisionExplainer"></p>
+          <div class="rule-trace-wrap"><div class="rule-trace-heading"><b>RULE TRACE</b><span>First matching rule wins</span></div><ol class="rule-trace" id="ruleTrace"></ol></div>
+          <details class="why-others"><summary>Why not the other policies?</summary><div id="otherPolicies" class="other-policies"></div></details>
+          <div class="decision-profile" id="decisionProfile"></div>
+        </section>
+
+        <section class="panel section-panel reveal" id="comparisonSection" aria-labelledby="comparisonTitle">
+          <div class="section-head"><div><span class="section-index">06 <i></i> COMPARE</span><h2 id="comparisonTitle">Which policy best meets your objective?</h2><p id="comparisonCaption">Scores compare all four simulated policies for your selected objective.</p></div><button class="button subtle" id="exportResultsButton"><svg><use href="#i-download"/></svg> Export results</button></div>
+          <div class="score-list" id="scoreCards" aria-label="Objective fit score by policy"></div>
+          <div class="comparison-grid"><div class="chart-card"><div class="chart-title"><div><b>POLICY RADAR</b><small>Relative metric performance</small></div><div class="chart-legend" id="radarLegend"></div></div><svg class="radar-chart" id="radarChart" role="img" aria-label="Radar chart comparing policy metrics" viewBox="0 0 420 300"></svg><div class="sr-only" id="radarTableAlt"></div></div><div class="chart-card"><div class="chart-title"><div><b>OBJECTIVE SCORE</b><small>Weighted fit across four policies</small></div><span class="chart-unit">0–100</span></div><svg class="bar-chart" id="barChart" role="img" aria-label="Bar chart of objective fit scores" viewBox="0 0 420 260"></svg></div></div>
+          <details class="metrics-details"><summary>View detailed policy metrics <span>WT · TAT · RT · throughput · switches · utilization</span></summary><div class="table-scroll"><table class="metrics-table"><thead><tr><th><button data-sort="policy">POLICY ↕</button></th><th><button data-sort="avgWT">AVG WT ↓</button></th><th><button data-sort="avgTAT">AVG TAT ↕</button></th><th><button data-sort="avgRT">AVG RT ↕</button></th><th><button data-sort="throughput">THROUGHPUT ↕</button></th><th><button data-sort="contextSwitches">SWITCHES ↕</button></th><th><button data-sort="utilization">CPU UTIL. ↕</button></th><th><button data-sort="score">FIT SCORE ↕</button></th></tr></thead><tbody id="metricsRows"></tbody></table></div></details>
+        </section>
+
+        <section class="panel section-panel reveal" id="timelineSection" aria-labelledby="timelineTitle">
+          <div class="section-head"><div><span class="section-index">07 <i></i> EXECUTION</span><h2 id="timelineTitle">Watch the schedule unfold.</h2><p id="timelineCaption">Recommended policy · timeline from t = 0</p></div><div class="timeline-select"><label for="timelinePolicy">POLICY</label><select id="timelinePolicy" aria-label="Timeline policy"></select></div></div>
+          <div class="timeline-toolbar"><button class="transport-button" id="playButton" aria-label="Play schedule"><svg><use href="#i-play"/></svg></button><button class="transport-button" id="stepButton" aria-label="Step schedule"><svg><use href="#i-step"/></svg></button><button class="transport-button" id="restartButton" aria-label="Restart schedule"><svg><use href="#i-restart"/></svg></button><label class="speed-control">SPEED<select id="speedSelect" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select></label><button class="compare-toggle" id="compareTimeline">Compare all four</button></div>
+          <div class="gantt-wrap"><div class="gantt-label">CPU</div><div class="gantt-scroll"><div class="gantt" id="gantt" role="img" aria-label="CPU schedule Gantt chart"></div><div class="gantt-axis" id="ganttAxis"></div></div></div><label class="scrubber"><span>PLAYHEAD</span><input type="range" id="timeScrubber" min="0" max="1" value="0" aria-label="Schedule playhead"><output id="timeOutput">t = 0</output></label>
+          <div class="runtime-grid"><div class="runtime-card"><div class="runtime-card-head"><span class="runtime-overline">CURRENTLY RUNNING</span><span class="runtime-live"><i></i> LIVE</span></div><div class="cpu-running"><span class="cpu-socket"><svg><use href="#i-cpu"/></svg></span><div><small>CPU</small><b id="runningProcess">IDLE</b><span id="runningRemaining">No process running</span></div></div><div class="cpu-progress"><i id="cpuProgress"></i></div></div><div class="runtime-card queue-card"><div class="runtime-card-head"><span class="runtime-overline">READY QUEUE</span><span class="queue-size" id="queueSize">0 READY</span></div><div class="ready-queue" id="readyQueue" aria-live="polite"><span class="queue-empty">Queue is empty</span></div></div></div>
+          <div class="process-results"><div class="subhead"><b>Per-process results</b><span>CT completion · TAT turnaround · WT waiting · RT response</span></div><div class="table-scroll"><table class="process-metrics"><thead><tr><th>PROCESS</th><th>CT</th><th>TAT</th><th>WT</th><th>RT</th><th>STARVATION</th><th class="aging-col">WT WITHOUT AGING</th></tr></thead><tbody id="processResults"></tbody></table></div></div>
+        </section>
+
+        <section class="panel section-panel reveal" id="whatIfSection" aria-labelledby="whatIfTitle">
+          <div class="section-head"><div><span class="section-index">08 <i></i> WHAT-IF LAB</span><h2 id="whatIfTitle">Nudge the workload. See the choice shift.</h2><p>Generate controlled variations from the current workload profile.</p></div><button class="button primary small" id="runVariations"><svg><use href="#i-flask"/></svg> Run 30 variations</button></div>
+          <div class="whatif-controls"><label class="whatif-slider"><span><b>Interactive share</b><output id="whatifInteractiveValue">50%</output></span><input type="range" id="whatifInteractive" min="0" max="100" value="50"></label><label class="whatif-slider"><span><b>Burst variability</b><output id="whatifCvValue">0.32 CV</output></span><input type="range" id="whatifCv" min="0" max="150" value="32"></label><label class="whatif-slider"><span><b>Priority spread</b><output id="whatifPriorityValue">3</output></span><input type="range" id="whatifPriority" min="0" max="10" value="3"></label><button class="button subtle" id="applyWhatIf">Apply to workload</button></div>
+          <div class="whatif-summary" id="whatifSummary" aria-live="polite"><span class="whatif-empty">Adjust a slider to preview the decision, or run 30 deterministic variations.</span></div><div class="whatif-stats" id="whatifStats" hidden><div><span>POLICY MATCH RATE</span><b id="matchRate">—</b></div><div><span>AVERAGE REGRET</span><b id="avgRegret">—</b></div><div><span>RULE / BEST AGREEMENT</span><b id="agreement">—</b></div></div><div class="variation-legend"><span><i class="match-color"></i> Rule and best policy agree</span><span><i class="miss-color"></i> Rule differs from best fit</span></div><div class="variation-chart" id="variationChart" role="img" aria-label="Policy match and regret across 30 workloads"></div>
+        </section>
+
+        <section class="panel section-panel reveal" id="verificationSection" aria-labelledby="verificationTitle">
+          <div class="section-head"><div><span class="section-index">09 <i></i> VERIFICATION &amp; ABOUT</span><h2 id="verificationTitle">Trust, but verify.</h2><p>Hand-calculated references run in this browser and under Node.js.</p></div><span class="verified-badge" id="verifiedBadge"><i></i><b>VERIFYING</b></span></div>
+          <div class="test-results" id="testResults" aria-live="polite"></div><div class="success-criteria"><h3>SUCCESS CRITERIA</h3><ul><li><svg><use href="#i-check"/></svg>Correct schedules and metrics</li><li><svg><use href="#i-check"/></svg>Explainable decisions</li><li><svg><use href="#i-check"/></svg>Adaptive workload response</li><li><svg><use href="#i-check"/></svg>Starvation handling</li><li><svg><use href="#i-check"/></svg>Deterministic tie handling</li><li><svg><use href="#i-check"/></svg>Offline portability</li></ul></div>
+          <details class="assumptions"><summary>Assumptions, limitations, and contribution</summary><div><p>Single CPU, known burst times, zero timed context-switch cost, user-declared process class, and offline simulation. The best-fit policy is an oracle for this known workload; it is not a claim about deployment in a live kernel.</p><p><b>Contribution:</b> Explainable Adaptive Meta-Scheduler—an educational integration of workload profiling, objective-aware policy comparison, readable rule traces, and regret analysis. It is not a new base scheduling algorithm.</p><p>SC1–SC6 are checked against deterministic, hand-calculated workloads.</p></div></details>
+        </section>
+        <footer class="app-footer"><span>SCHEDULAB · EXPLAINABLE ADAPTIVE META-SCHEDULER</span><span id="footerVerified">Verification pending</span><span>OFFLINE · ZERO NETWORK CALLS</span></footer>
+      </div>
+    </main>
+    <button class="command-fab" id="commandFab" aria-label="Open command palette"><svg><use href="#i-command"/></svg></button>
+  </div>
+
+  <dialog class="command-dialog" id="commandDialog" aria-labelledby="commandTitle"><div class="command-shell"><div class="command-search"><svg><use href="#i-search"/></svg><input id="commandInput" autocomplete="off" placeholder="Jump to, run, switch, toggle…" aria-label="Search commands"><kbd>ESC</kbd></div><h2 id="commandTitle">QUICK ACTIONS</h2><div class="command-list" id="commandList" role="listbox"></div><footer><span><kbd>↑</kbd><kbd>↓</kbd> navigate</span><span><kbd>↵</kbd> select</span><span><kbd>?</kbd> shortcuts</span></footer></div></dialog>
+  <dialog class="help-dialog" id="helpDialog" aria-labelledby="helpTitle"><div class="help-shell"><div class="dialog-heading"><div><p class="eyebrow">KEYBOARD SHORTCUTS</p><h2 id="helpTitle">Move around faster.</h2></div><button class="icon-button" data-close-dialog="helpDialog" aria-label="Close shortcut help">×</button></div><dl><div><dt>Open command palette</dt><dd><kbd>⌘</kbd><kbd>K</kbd></dd></div><div><dt>Run analysis</dt><dd><kbd>⌘</kbd><kbd>↵</kbd></dd></div><div><dt>Show shortcuts</dt><dd><kbd>?</kbd></dd></div><div><dt>Close dialog</dt><dd><kbd>ESC</kbd></dd></div></dl></div></dialog>
+  <div class="toast-region" id="toastRegion" role="status" aria-live="polite"></div>
+
+  <script src="js/config.js"></script><script src="js/validator.js"></script><script src="js/analyzer.js"></script><script src="js/schedulers.js"></script><script src="js/metrics.js"></script><script src="js/scoreboard.js"></script><script src="js/engine.js"></script><script src="js/presets.js"></script><script src="tests/test-cases.js"></script><script src="js/landing.js"></script><script src="js/ui.js"></script><script src="js/main.js"></script>
+</body>
+</html>

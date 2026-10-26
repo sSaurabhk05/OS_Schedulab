@@ -1,0 +1,10 @@
+# Local build/render scratch files
+/tmp/
+
+# macOS metadata
+.DS_Store
+
+# Earlier single-file prototype sources (the modular app uses css/ and js/)
+/app.js
+/config.js
+/styles.css
